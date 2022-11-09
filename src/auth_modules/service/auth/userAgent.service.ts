@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { UserAgentReq } from '../../../bke_modules/request';
+import { UserAgentReq } from '../../../auth_modules/request';
 import { UserAgentRepo } from '../../repo/auth/userAgent.repo';
 
 @Injectable()

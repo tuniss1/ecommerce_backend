@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { UserRepo } from '../../../bke_modules/repo';
+import { UserRepo } from '../../../auth_modules/repo';
 import { UserService } from '../../service/auth/user.service';
 import { UserController } from '../../controller/auth/user.controller';
 import { MailService } from '../../../nmd_core/shared/mail.service';
