@@ -9,18 +9,18 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   // setup firebase
-  const adminConfig: ServiceAccount = {
-    projectId: process.env.PROJECT_ID,
-    privateKey: process.env.FIREBASE_PRIVATE_KEY,
-    clientEmail: process.env.CLIENT_EMAIL,
-  };
+  // const adminConfig: ServiceAccount = {
+  //   projectId: process.env.PROJECT_ID,
+  //   privateKey: process.env.FIREBASE_PRIVATE_KEY,
+  //   clientEmail: process.env.CLIENT_EMAIL,
+  // };
 
-  admin.initializeApp({
-    credential: admin.credential.cert(adminConfig),
-  });
+  // admin.initializeApp({
+  //   credential: admin.credential.cert(adminConfig),
+  // });
 
-  const db = admin.firestore();
-  GlobalService.globalDb = db;
+  // const db = admin.firestore();
+  // GlobalService.globalDb = db;
   // end of setup firebase
 
   // setup cors
@@ -40,7 +40,7 @@ async function bootstrap() {
   app.setGlobalPrefix('api');
   app.use(requestIp.mw());
 
-  const port = Number(process.env.PORT) || 3000;
+  const port = Number(process.env.PORT) || 8080;
   await app.listen(port, () => {
     console.log('listening on port ' + port);
   });
