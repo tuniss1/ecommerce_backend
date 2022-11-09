@@ -5,12 +5,12 @@ import {
   GetUserReq,
   GmailVerifyReq,
   ResetPassReq,
-} from '../../../bke_modules/request';
+} from '../../../auth_modules/request';
 import {
   LoginUserRes,
   RegisterUserRes,
   UserRes,
-} from '../../../bke_modules/response';
+} from '../../../auth_modules/response';
 import { ReturnNotFoundException } from '../../../nmd_core/common/utils/custom.error';
 import {
   comparePassword,
@@ -19,7 +19,7 @@ import {
 } from '../../../nmd_core/common/utils/support-function';
 import { ConfigService } from '../../../nmd_core/config';
 import { MailService } from '../../../nmd_core/shared/mail.service';
-import { UserRepo } from '../../../bke_modules/repo';
+import { UserRepo } from '../../../auth_modules/repo';
 import { HelperService } from '../../../nmd_core/shared/helper.service';
 import { ObjectId } from 'mongoose';
 import { UserModel } from '../../model/user/user.model';

@@ -13,7 +13,7 @@ import {
   GetUserReq,
   GmailVerifyReq,
   ResetPassReq,
-} from '../../../bke_modules/request';
+} from '../../../auth_modules/request';
 import { UserService } from '../../service/auth/user.service';
 import { Request } from 'express';
 import { ReturnInternalServerError } from '../../../nmd_core/common/utils/custom.error';
