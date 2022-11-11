@@ -7,11 +7,12 @@ import { Category, CategoryModel } from '../../model/category/category.model';
 export class CategoryRepo {
   constructor(private readonly responseService: ResponseService) {}
 
-  async upsert(id: ObjectId, item: any): Promise<CategoryModel> {
-    const category = await Category.findByIdAndUpdate({ _id: id }, item, {
-      new: true,
-      upsert: true,
-    });
+  async upsert(item: any): Promise<CategoryModel> {
+    const category = await Category.findOneAndUpdate(
+      { name: item.name },
+      { $inc: { quantity: 1 } },
+      { new: true, upsert: true },
+    );
     return category;
   }
 

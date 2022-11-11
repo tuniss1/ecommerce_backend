@@ -50,7 +50,7 @@ export class ProductController {
     query: {
       page?: number;
       limit?: number;
-      categoryId?: number;
+      categoryName?: string;
       minPrice?: number;
       maxPrice?: number;
     },
@@ -74,7 +74,7 @@ export class ProductController {
   async getProductStatus(
     @Query()
     query: {
-      categoryId?: number;
+      categoryName?: string;
       minPrice?: number;
       maxPrice?: number;
     },

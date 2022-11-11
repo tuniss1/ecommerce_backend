@@ -1,12 +1,17 @@
 import { Injectable } from '@nestjs/common';
-import { ProductRepo } from '../repo';
+import { CategoryRepo, ProductRepo } from '../repo';
 import { CreateProductReq } from '../request';
+import { CategoryService } from './category.service';
 
 @Injectable()
 export class ProductService {
-  constructor(private readonly productRepo: ProductRepo) {}
+  constructor(
+    private readonly productRepo: ProductRepo,
+    private readonly categoryService: CategoryService,
+  ) {}
 
   async createProduct(createProductReq: CreateProductReq) {
+    this.categoryService.upsert(createProductReq.categoryName);
     const newProduct = await this.productRepo.create(createProductReq);
     return newProduct;
   }
@@ -14,13 +19,13 @@ export class ProductService {
   async getAll({
     page,
     limit,
-    categoryId,
+    categoryName,
     minPrice,
     maxPrice,
   }: {
     page?: number;
     limit?: number;
-    categoryId?: number;
+    categoryName?: string;
     minPrice?: number;
     maxPrice?: number;
   }) {
@@ -40,17 +45,17 @@ export class ProductService {
         },
       },
     );
-    if (categoryId != null)
-      res.data = res.data.filter((e) => e.category.id == categoryId);
+    if (categoryName != null)
+      res.data = res.data.filter((e) => e.categoryName == categoryName);
     return { listRoom: res };
   }
 
   async getStatus({
-    categoryId,
+    categoryName,
     minPrice,
     maxPrice,
   }: {
-    categoryId?: number;
+    categoryName?: string;
     minPrice?: number;
     maxPrice?: number;
   }) {
@@ -63,8 +68,8 @@ export class ProductService {
         },
       },
     );
-    if (categoryId != null)
-      res = res.filter((e) => e.category.id == categoryId);
+    if (categoryName != null)
+      res = res.filter((e) => e.categoryName == categoryName);
     return { count: res.length, minPrice: minPrice, maxPrice: maxPrice };
   }
 }
