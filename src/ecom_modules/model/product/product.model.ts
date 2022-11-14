@@ -8,13 +8,7 @@ export class ProductModel {
   description: string;
   totalQuantity: number;
   images: string[];
-  category: Category;
-}
-
-class Category {
-  id: number;
-  name: string;
-  quantity: number;
+  categoryName: string;
 }
 
 const ProductSchema = new Schema({
@@ -26,7 +20,7 @@ const ProductSchema = new Schema({
   description: { type: String, default: '' },
   totalQuantity: { type: Number, default: 0 },
   images: [{ type: String }],
-  category: { type: Object },
+  categoryName: { type: String },
 });
 
 export const Product = mongoose.model<ProductModel>('Product', ProductSchema);

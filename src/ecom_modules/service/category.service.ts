@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { isNotEmpty } from 'class-validator';
 import { CategoryRepo } from '../repo';
 import { CreateCategoryReq } from '../request';
 
@@ -17,5 +18,10 @@ export class CategoryService {
     );
 
     return { listRoom: res };
+  }
+
+  async upsert(categoryName: string) {
+    const upsertCate = await this.categoryRepo.upsert({ name: categoryName });
+    return upsertCate;
   }
 }
