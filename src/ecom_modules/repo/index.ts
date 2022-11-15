@@ -6,3 +6,6 @@ export * from './product/product.repo';
 
 // category
 export * from './category/category.repo';
+
+// order
+export * from './order/order.repo';
