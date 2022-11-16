@@ -5,6 +5,7 @@ import {
   HttpCode,
   UsePipes,
   Req,
+  Get,
 } from '@nestjs/common';
 import {
   CheckVerifyReq,
@@ -12,6 +13,7 @@ import {
   FcmTokenReq,
   GetUserReq,
   GmailVerifyReq,
+  RemoveUserReq,
   ResetPassReq,
 } from '../../../auth_modules/request';
 import { UserService } from '../../service/auth/user.service';
@@ -149,6 +151,40 @@ export class UserController {
         statusCode: 200,
         message: 'Create fcmToken successfully.',
         data: res,
+      };
+    } catch (error) {
+      if (error.status) throw error;
+      else throw ReturnInternalServerError(error);
+    }
+  }
+
+  @Post('/remove')
+  @HttpCode(200)
+  @UsePipes(new ValidationPipe())
+  async remove(@Body() removeUserReq: RemoveUserReq) {
+    try {
+      const returnUserRes = await this.userService.remove(removeUserReq);
+      return {
+        statusCode: 200,
+        message: 'Remove successfully.',
+        data: returnUserRes,
+      };
+    } catch (error) {
+      if (error.status) throw error;
+      else throw ReturnInternalServerError(error);
+    }
+  }
+
+  @Get('/list')
+  @HttpCode(200)
+  @UsePipes(new ValidationPipe())
+  async getList() {
+    try {
+      const returnUserRes = await this.userService.getAll();
+      return {
+        statusCode: 200,
+        message: 'Get successfully.',
+        data: returnUserRes,
       };
     } catch (error) {
       if (error.status) throw error;

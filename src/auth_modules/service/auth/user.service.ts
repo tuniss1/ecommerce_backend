@@ -4,6 +4,7 @@ import {
   CreateUserReq,
   GetUserReq,
   GmailVerifyReq,
+  RemoveUserReq,
   ResetPassReq,
 } from '../../../auth_modules/request';
 import {
@@ -53,7 +54,8 @@ export class UserService {
     const returnUserRes: UserRes = {
       _id: userModel._id,
       email: userModel.email,
-      fullName: userModel.fullName,
+      firstName: userModel.firstName,
+      lastName: userModel.lastName,
       photoUrl: userModel.photoUrl,
     };
     // Generate access token
@@ -83,15 +85,21 @@ export class UserService {
     const userModel = {
       email: createUserReq.email,
       hashedPassword: hashedPassword,
-      fullName: createUserReq.fullName,
+      firstName: createUserReq.firstName,
+      lastName: createUserReq.lastName,
       hashedToken: hashedToken,
+      status: 1,
     };
 
     const returnUser = await this.userRepo.create(userModel);
 
     const registerUserRes = this.returnLoginRes(returnUser);
 
-    this.mailService.gmailVerify(returnUser.email, returnUser.fullName, token);
+    this.mailService.gmailVerify(
+      returnUser.email,
+      returnUser.firstName + returnUser.lastName,
+      token,
+    );
 
     return registerUserRes;
   }
@@ -112,13 +120,35 @@ export class UserService {
     return returnLoginRes;
   }
 
+  async remove(removeUserReq: RemoveUserReq): Promise<UserModel> {
+    const returnUser = await this.userRepo.getByEmail(removeUserReq.email);
+    if (!returnUser) throw ReturnNotFoundException('Wrong email.');
+
+    // Delete user
+    await this.removeFcmToken(returnUser._id);
+    const updateItem = { status: -1 };
+    const returnRes = await this.userRepo.delete(returnUser._id, updateItem);
+
+    return returnRes;
+  }
+
+  async getAll(): Promise<UserModel[]> {
+    const res = await this.userRepo.getAll();
+
+    return res;
+  }
+
   async gmailVerify(gmailVerifyReq: GmailVerifyReq) {
     // check user with email
     const getOldUser = await this.userRepo.getByEmail(gmailVerifyReq.email);
     if (!getOldUser) throw ReturnNotFoundException('User not found.');
 
     const token = this.helperService.makeToken(6);
-    this.mailService.gmailVerify(getOldUser.email, getOldUser.fullName, token);
+    this.mailService.gmailVerify(
+      getOldUser.email,
+      getOldUser.firstName + getOldUser.lastName,
+      token,
+    );
 
     // hashed token
     const hashedToken = await hashPassword(token);
@@ -169,13 +199,13 @@ export class UserService {
   }
 
   async createFcmToken(fcmToken: string, userId: ObjectId) {
-    const updateItem = { fcmToken: fcmToken };
+    const updateItem = { status: 1, fcmToken: fcmToken };
     const user = this.userRepo.update(userId, updateItem);
     return user;
   }
 
   async removeFcmToken(userId: ObjectId) {
-    const updateItem = { fcmToken: '' };
+    const updateItem = { status: 0, fcmToken: '' };
     const user = this.userRepo.update(userId, updateItem);
     return user;
   }
