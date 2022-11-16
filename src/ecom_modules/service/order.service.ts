@@ -48,14 +48,18 @@ export class OrderService {
       return res;
     };
 
+    const filter = {
+      userId: userId,
+    };
+
+    if (status !== -1) filter['status'] = status;
+
     const res = await this.orderRepo.findAllAndPaging(
       { page, limit, sort: {} },
-      {
-        status: status,
-        userId: userId,
-      },
+      filter,
       callback,
     );
+
     return { listRoom: res };
   }
 

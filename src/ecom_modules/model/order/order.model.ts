@@ -1,12 +1,18 @@
 import mongoose, { ObjectId, Schema } from 'mongoose';
-import { ProductModel } from '../product/product.model';
 export class OrderModel {
   userId: string;
   products: ProductModel[];
   totalCost: number;
   deliver: DeliverModel;
   note: string;
-  status: number;
+  status: number; // 0 means pending. 1 is confirmed. 2 is delivering. 3 is finish. 4 is cancelled
+}
+
+class ProductModel {
+  name: string;
+  price: number;
+  quantity: number;
+  images: string[];
 }
 
 class DeliverModel {
