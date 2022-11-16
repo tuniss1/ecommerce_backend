@@ -7,7 +7,11 @@ export class CreateUserReq {
 
   @IsString()
   @IsNotEmpty()
-  fullName: string;
+  firstName: string;
+
+  @IsString()
+  @IsNotEmpty()
+  lastName: string;
 
   @IsString()
   @IsNotEmpty()
@@ -22,6 +26,12 @@ export class GetUserReq {
   @IsString()
   @IsNotEmpty()
   password: string;
+}
+
+export class RemoveUserReq {
+  @IsEmail()
+  @IsNotEmpty()
+  email: string;
 }
 
 export class GmailVerifyReq {

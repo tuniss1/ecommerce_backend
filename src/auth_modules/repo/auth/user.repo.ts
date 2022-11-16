@@ -16,6 +16,12 @@ export class UserRepo {
     return userModel;
   }
 
+  async getAll(): Promise<UserModel[]> {
+    const res: UserModel[] = await User.find();
+
+    return res;
+  }
+
   async create(item: any): Promise<UserModel> {
     const newUser = new User(item);
     await newUser.save();
@@ -30,6 +36,14 @@ export class UserRepo {
         if (model) return model;
       },
     ).clone();
+
+    return res;
+  }
+
+  async delete(id: ObjectId, item: any) {
+    await this.update(id, item);
+
+    const res = await this.getByID(id);
 
     return res;
   }
