@@ -3,7 +3,8 @@ import { ObjectId } from 'mongoose';
 export class UserRes {
   _id: ObjectId;
   email: string;
-  fullName: string;
+  firstName: string;
+  lastName: string;
   photoUrl: string;
 }
 
