@@ -9,12 +9,19 @@ import {
   Query,
 } from '@nestjs/common';
 import { query, Request } from 'express';
-import { CreateOrderReq } from '../../request';
+import {
+  CreateOrderReq,
+  GetOrderDetailReq,
+  GetOrderListReq,
+  GetOrderStatusReq,
+  UpdateOrderReq,
+} from '../../request';
 import { AuthMiddleware } from '../../../nmd_core/common/middlewares/bearer.middleware';
 import { ValidationPipe } from '../../../nmd_core/common/pipes/validation.pipe';
 import { ReturnInternalServerError } from '../../../nmd_core/common/utils/custom.error';
 import { OrderService } from '../../../ecom_modules/service/order.service';
 import { PagingPipe } from '../../../nmd_core/common/pipes/paging.pipe';
+import { ObjectId } from 'mongoose';
 
 @Controller('/order')
 export class OrderController {
@@ -35,7 +42,7 @@ export class OrderController {
 
       return {
         statusCode: 200,
-        message: 'Create product successfully',
+        message: 'Create order successfully',
         data: res,
       };
     } catch (error) {
@@ -44,20 +51,18 @@ export class OrderController {
     }
   }
 
-  @Get('')
+  @Post('')
   async getOrderDetail(
-    @Query()
-    query: {
-      orderId?: string;
-    },
+    @Req() req: Request,
+    @Body() getOrderDetailReq: GetOrderDetailReq,
   ) {
     // await this.authMiddleWare.validateBearer(req);
 
     try {
-      const res = await this.orderService.getById(query.orderId);
+      const res = await this.orderService.getById(getOrderDetailReq);
       return {
         statusCode: 200,
-        message: 'Get all product info successfully',
+        message: 'Get order detail info successfully',
         data: res,
       };
     } catch (error) {
@@ -66,24 +71,18 @@ export class OrderController {
     }
   }
 
-  @Get('/list')
+  @Post('/list')
   async getOrderList(
-    @Query(new PagingPipe())
-    query: {
-      userId?: string;
-      orderId?: string;
-      page?: number;
-      limit?: number;
-      status?: number;
-    },
+    @Req() req: Request,
+    @Body() getOrderListReq: GetOrderListReq,
   ) {
     // await this.authMiddleWare.validateBearer(req);
     // orderId is like search field
     try {
-      const res = await this.orderService.getAll(query);
+      const res = await this.orderService.getAll(getOrderListReq);
       return {
         statusCode: 200,
-        message: 'Get all product info successfully',
+        message: 'Get all order info successfully',
         data: res,
       };
     } catch (error) {
@@ -92,21 +91,38 @@ export class OrderController {
     }
   }
 
-  @Get('/status')
-  async getProductStatus(
-    @Query()
-    query: {
-      userId?: string;
-      status?: number;
-    },
+  @Post('/update')
+  async updateOrderStatus(
+    @Req() req: Request,
+    @Body() updateOrderReq: UpdateOrderReq,
   ) {
     // await this.authMiddleWare.validateBearer(req);
 
     try {
-      const res = await this.orderService.getStatus(query);
+      const res = await this.orderService.updateStatus(updateOrderReq);
       return {
         statusCode: 200,
-        message: 'Get all product info successfully',
+        message: 'Update order successfully',
+        data: res,
+      };
+    } catch (error) {
+      if (error.status) throw error;
+      else throw ReturnInternalServerError(error);
+    }
+  }
+
+  @Post('/status')
+  async getOrderStatus(
+    @Req() req: Request,
+    @Body() getOrderStatusReq: GetOrderStatusReq,
+  ) {
+    // await this.authMiddleWare.validateBearer(req);
+
+    try {
+      const res = await this.orderService.getStatus(getOrderStatusReq);
+      return {
+        statusCode: 200,
+        message: 'Get order status info successfully',
         data: res,
       };
     } catch (error) {

@@ -13,7 +13,7 @@ export class OrderRepo {
     return res;
   }
 
-  async upsert(id: ObjectId, item: any): Promise<OrderModel> {
+  async upsert(id: string, item: any): Promise<OrderModel> {
     const order = await Order.findByIdAndUpdate({ _id: id }, item, {
       new: true,
       upsert: true,
@@ -31,12 +31,11 @@ export class OrderRepo {
   async findAllAndPaging(
     { page, limit, sort }: { page: number; limit: number; sort?: any },
     filter?: any,
-    callback?: any,
   ): Promise<IFResponse<OrderModel>> {
     let skip = 0;
     skip = (page - 1) * limit;
 
-    const orders: OrderModel[] = await Order.find(filter, callback)
+    const orders: OrderModel[] = await Order.find(filter)
       .limit(limit)
       .skip(skip)
       .sort(sort);

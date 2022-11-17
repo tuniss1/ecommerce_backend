@@ -16,6 +16,11 @@ export class UserRepo {
     return userModel;
   }
 
+  async getByIdString(id: string): Promise<UserModel> {
+    const userModel: UserModel = await User.findById({ _id: id });
+    return userModel;
+  }
+
   async getAll(): Promise<UserModel[]> {
     const res: UserModel[] = await User.find();
 

@@ -1,18 +1,33 @@
 import { Injectable } from '@nestjs/common';
-import { OrderRepo } from '../repo';
+import { ReturnNotFoundException } from '../../nmd_core/common/utils/custom.error';
+import { OrderRepo, UserRepo } from '../repo';
 import { CreateOrderReq } from '../request';
 
 @Injectable()
 export class OrderService {
-  constructor(private readonly orderRepo: OrderRepo) {}
+  constructor(
+    private readonly orderRepo: OrderRepo,
+    private readonly userRepo: UserRepo,
+  ) {}
 
   async createOrder(createOrderReq: CreateOrderReq) {
+    const user = await this.userRepo.getByIdString(createOrderReq.userId);
+    if (!user) throw ReturnNotFoundException('Invalid user.');
+
+    // create deliver
+
+    // create order
     const newOrder = await this.orderRepo.create(createOrderReq);
     return newOrder;
   }
 
-  async getById(orderId: string) {
-    const res = await this.orderRepo.getById(orderId);
+  async getById({ userId, orderId }: { userId?: string; orderId?: string }) {
+    const res = await this.orderRepo.getById(orderId).catch((e) => {
+      throw ReturnNotFoundException('Invalid user or order.');
+    });
+
+    if (!res || res.userId !== userId)
+      throw ReturnNotFoundException('Invalid user or order.');
     return res;
   }
 
@@ -20,11 +35,9 @@ export class OrderService {
     page,
     limit,
     userId,
-    orderId,
     status,
   }: {
     userId?: string;
-    orderId?: string;
     page?: number;
     limit?: number;
     status?: number;
@@ -36,41 +49,51 @@ export class OrderService {
       limit = 20;
     }
 
-    const callback = (err?: any, docs?: any) => {
-      const res = [];
-      if (docs) {
-        for (const doc of docs) {
-          if (orderId !== null && doc._id.includes(orderId)) {
-            res.push(doc);
-          }
-        }
-      }
-      return res;
-    };
-
     const filter = {
       userId: userId,
     };
 
-    if (status !== -1) filter['status'] = status;
+    if (status && status != -1) filter['status'] = status;
 
     const res = await this.orderRepo.findAllAndPaging(
       { page, limit, sort: {} },
       filter,
-      callback,
     );
 
     return { listRoom: res };
   }
 
+  async updateStatus({
+    userId,
+    orderId,
+    status,
+  }: {
+    orderId?: string;
+    userId?: string;
+    status?: number;
+  }) {
+    if (!status || status < 0) throw ReturnNotFoundException('Invalid status.');
+    const updateItem = {
+      status,
+    };
+
+    const order = await this.orderRepo.getById(orderId);
+    if (!order || order.userId != userId)
+      throw ReturnNotFoundException('Invalid order id or user.');
+
+    const res = await this.orderRepo.upsert(orderId, updateItem);
+
+    return { listRoom: res };
+  }
+
   async getStatus({ userId, status }: { userId?: string; status?: number }) {
-    let res = await this.orderRepo.getAll(
-      {},
-      {
-        userId: userId,
-        status: status,
-      },
-    );
+    const filter = {
+      userId,
+    };
+
+    if (status && status != -1) filter['status'] = status;
+
+    let res = await this.orderRepo.getAll({}, filter);
     return { count: res.length };
   }
 }

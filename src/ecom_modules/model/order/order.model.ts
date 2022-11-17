@@ -9,6 +9,7 @@ export class OrderModel {
 }
 
 class ProductModel {
+  _id: ObjectId;
   name: string;
   price: number;
   quantity: number;
