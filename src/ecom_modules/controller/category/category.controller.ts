@@ -60,4 +60,21 @@ export class CategoryController {
       else throw ReturnInternalServerError(error);
     }
   }
+
+  @Get('/truncate')
+  async truncate() {
+    // await this.authMiddleWare.validateBearer(req);
+
+    try {
+      const res = await this.categoryService.truncate();
+      return {
+        statusCode: 200,
+        message: 'Get all product info successfully',
+        data: res,
+      };
+    } catch (error) {
+      if (error.status) throw error;
+      else throw ReturnInternalServerError(error);
+    }
+  }
 }

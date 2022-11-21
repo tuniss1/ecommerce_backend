@@ -21,6 +21,10 @@ export class OrderRepo {
     return order;
   }
 
+  async truncate() {
+    await Order.deleteMany({}).catch((e) => console.log(e));
+  }
+
   async create(item: any): Promise<OrderModel> {
     const order = new Order(item);
     await order.save();

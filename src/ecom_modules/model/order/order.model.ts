@@ -5,7 +5,7 @@ export class OrderModel {
   totalCost: number;
   deliver: DeliverModel;
   note: string;
-  status: number; // 0 means pending. 1 is confirmed. 2 is delivering. 3 is finish. 4 is cancelled
+  status: number; // 0 means pending. 1 is paid. 2 is confirmed. 3 is delivering. 4 is finish. 5 is cancelled
 }
 
 class ProductModel {

@@ -16,6 +16,10 @@ export class CategoryRepo {
     return category;
   }
 
+  async truncate() {
+    await Category.deleteMany({}).catch((e) => console.log(e));
+  }
+
   async create(item: any): Promise<CategoryModel> {
     const category = new Category(item);
     await category.save();

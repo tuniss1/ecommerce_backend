@@ -28,8 +28,8 @@ export class GetOrderDetailReq {
 
 export class GetOrderListReq {
   userId: string;
-  page: number;
-  limit: number;
+  page?: number;
+  limit?: number;
   status?: number;
 }
 

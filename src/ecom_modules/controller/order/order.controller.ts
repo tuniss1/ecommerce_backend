@@ -51,6 +51,31 @@ export class OrderController {
     }
   }
 
+  @Post('/payment')
+  @HttpCode(200)
+  @UsePipes(new ValidationPipe())
+  async createPayment(
+    @Req() req: Request,
+    @Body()
+    createPaymentReq: {
+      orderId: string;
+      totalCost?: number;
+    },
+  ) {
+    try {
+      const res = await this.orderService.createPayment(createPaymentReq);
+
+      return {
+        statusCode: 200,
+        message: 'Payment successfully',
+        data: res,
+      };
+    } catch (error) {
+      if (error.status) throw error;
+      else throw ReturnInternalServerError(error);
+    }
+  }
+
   @Post('')
   async getOrderDetail(
     @Req() req: Request,
@@ -123,6 +148,23 @@ export class OrderController {
       return {
         statusCode: 200,
         message: 'Get order status info successfully',
+        data: res,
+      };
+    } catch (error) {
+      if (error.status) throw error;
+      else throw ReturnInternalServerError(error);
+    }
+  }
+
+  @Get('/truncate')
+  async truncate() {
+    // await this.authMiddleWare.validateBearer(req);
+
+    try {
+      const res = await this.orderService.truncate();
+      return {
+        statusCode: 200,
+        message: 'Get all product info successfully',
         data: res,
       };
     } catch (error) {

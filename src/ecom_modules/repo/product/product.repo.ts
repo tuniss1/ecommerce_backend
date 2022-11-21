@@ -21,6 +21,10 @@ export class ProductRepo {
     return product;
   }
 
+  async truncate() {
+    await Product.deleteMany({}).catch((e) => console.log(e));
+  }
+
   async create(item: any): Promise<ProductModel> {
     const product = new Product(item);
     await product.save();

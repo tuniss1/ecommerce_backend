@@ -24,4 +24,8 @@ export class CategoryService {
     const upsertCate = await this.categoryRepo.upsert({ name: categoryName });
     return upsertCate;
   }
+
+  async truncate() {
+    await this.categoryRepo.truncate();
+  }
 }
