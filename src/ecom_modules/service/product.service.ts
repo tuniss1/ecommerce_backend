@@ -54,44 +54,63 @@ export class ProductService {
       page = 1;
     }
     if (!limit) {
-      limit = 20;
+      limit = 30;
     }
 
     const sortItem = {};
     if (sort && sort.length) sortItem['price'] = sort;
 
+    const filter = {
+      price: {
+        $lte: maxPrice ? maxPrice : 9999999999999,
+        $gte: minPrice ? minPrice : 0,
+      },
+    };
+
+    if (categoryName && categoryName != null)
+      filter['categoryName'] = categoryName;
+
     const res = await this.productRepo.findAllAndPaging(
       { page, limit, sort: sortItem },
-      {
-        price: {
-          $lte: maxPrice ? maxPrice : 9999999999999,
-          $gte: minPrice ? minPrice : 0,
-        },
-      },
+      filter,
     );
-    if (categoryName != null)
-      res.data = res.data.filter((e) => e.categoryName == categoryName);
+    // if (categoryName != null)
+    // res.data = res.data.filter((e) => e.categoryName == categoryName);
     return { listRoom: res };
   }
 
+  async update(id: ObjectId, updateItem?: {}) {
+    updateItem = { ...updateItem, updatedAt: new Date().getTime() };
+
+    const res = await this.productRepo.upsert(id, updateItem);
+
+    return { data: res };
+  }
+
   async getStatus({
+    page,
+    limit,
     categoryName,
     minPrice,
     maxPrice,
+    sort,
   }: {
+    page?: number;
+    limit?: number;
     categoryName?: string;
     minPrice?: number;
     maxPrice?: number;
+    sort?: string;
   }) {
-    let res = await this.productRepo.getAll(
-      {},
-      {
-        price: {
-          $lte: maxPrice ? maxPrice : 9999999999999,
-          $gte: minPrice ? minPrice : 0,
-        },
-      },
-    );
+    let res = await this.getAll({
+      page,
+      limit,
+      categoryName,
+      minPrice,
+      maxPrice,
+      sort,
+    }).then((res) => res.listRoom.data);
+    console.log(res.length);
     const resOption = {
       minPrice: null,
       maxPrice: null,

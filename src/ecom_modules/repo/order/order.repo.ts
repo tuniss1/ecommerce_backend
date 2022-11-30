@@ -42,7 +42,8 @@ export class OrderRepo {
     const orders: OrderModel[] = await Order.find(filter)
       .limit(limit)
       .skip(skip)
-      .sort(sort);
+      .sort(sort)
+      .lean();
     const totalRecords: number = await Order.countDocuments(filter);
 
     return this.responseService.getResponse<OrderModel>(

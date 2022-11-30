@@ -71,14 +71,14 @@ export class OrderService {
     //   .replace(':', '');
 
     let vnp_Params = {
-      vnp_Amount: Number(totalCost * 20000).toString(),
+      vnp_Amount: Number(totalCost * 20000 * 100).toString(),
       vnp_BankCode: 'NCB',
       vnp_Command: 'pay',
       vnp_CreateDate: createDate,
       vnp_CurrCode: 'VND',
       vnp_IpAddr: '%3A%3A1',
-      vnp_Locale: 'vn',
-      vnp_OrderInfo: 'Thanh+toan+don+hang+cua+Dragon+fish',
+      vnp_Locale: 'en',
+      vnp_OrderInfo: 'Payment+for+Dragon+fish+sotre',
       vnp_OrderType: 'billpayment',
       vnp_ReturnUrl: vnp_Config.vnp_ReturnUrl,
       vnp_TmnCode: '74M7MB5Y',
@@ -118,11 +118,13 @@ export class OrderService {
     limit,
     userId,
     status,
+    sort,
   }: {
     userId?: string;
     page?: number;
     limit?: number;
     status?: number;
+    sort?: string;
   }) {
     if (!page || page <= 0) {
       page = 1;
@@ -131,16 +133,38 @@ export class OrderService {
       limit = 20;
     }
 
-    const filter = {
-      userId: userId,
-    };
+    const filter = {};
 
+    if (userId) filter['userId'] = userId;
     if (status && status != -1) filter['status'] = status;
 
+    const sortItem = {};
+    if (sort && sort.length) sortItem['createdAt'] = sort;
+
     const res = await this.orderRepo.findAllAndPaging(
-      { page, limit, sort: {} },
+      { page, limit, sort: sortItem },
       filter,
     );
+
+    if (!userId) {
+      const userObj = {};
+      const returnData = [];
+      for (const order of res.data) {
+        if (!userObj[order.userId]) {
+          userObj[order.userId] = await this.userRepo.getByIdString(
+            order.userId,
+          );
+        }
+        returnData.push({
+          ...order,
+          customer: {
+            firstName: userObj[order.userId].firstName,
+            lastName: userObj[order.userId].lastName,
+          },
+        });
+      }
+      return { listRoom: { data: returnData, meta_data: res.meta_data } };
+    }
 
     return { listRoom: res };
   }

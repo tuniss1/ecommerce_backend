@@ -98,9 +98,12 @@ export class ProductController {
   async getProductStatus(
     @Query()
     query: {
+      page?: number;
+      limit?: number;
       categoryName?: string;
       minPrice?: number;
       maxPrice?: number;
+      sort?: string;
     },
   ) {
     // await this.authMiddleWare.validateBearer(req);

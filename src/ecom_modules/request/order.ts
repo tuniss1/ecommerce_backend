@@ -31,6 +31,7 @@ export class GetOrderListReq {
   page?: number;
   limit?: number;
   status?: number;
+  sort?: string;
 }
 
 export class GetOrderStatusReq {

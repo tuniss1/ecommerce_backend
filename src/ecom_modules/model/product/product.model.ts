@@ -9,6 +9,8 @@ export class ProductModel {
   totalQuantity: number;
   images: string[];
   categoryName: string;
+  createdAt: number;
+  updatedAt: number;
 }
 
 const ProductSchema = new Schema({
@@ -21,6 +23,8 @@ const ProductSchema = new Schema({
   totalQuantity: { type: Number, default: 0 },
   images: [{ type: String }],
   categoryName: { type: String },
+  createdAt: { type: Number, default: new Date().getTime() },
+  updatedAt: { type: Number, default: new Date().getTime() },
 });
 
 export const Product = mongoose.model<ProductModel>('Product', ProductSchema);
