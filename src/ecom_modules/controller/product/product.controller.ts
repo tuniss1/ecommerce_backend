@@ -9,7 +9,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { query, Request } from 'express';
-import { CreateProductReq } from '../../request';
+import { CreateProductReq, UpdateProductReq } from '../../request';
 import { AuthMiddleware } from '../../../nmd_core/common/middlewares/bearer.middleware';
 import { ValidationPipe } from '../../../nmd_core/common/pipes/validation.pipe';
 import { ReturnInternalServerError } from '../../../nmd_core/common/utils/custom.error';
@@ -45,6 +45,27 @@ export class ProductController {
     }
   }
 
+  @Post('/update')
+  @HttpCode(200)
+  @UsePipes(new ValidationPipe())
+  async updateProduct(
+    @Req() req: Request,
+    @Body() updateProductReq: UpdateProductReq,
+  ) {
+    try {
+      const res = await this.productService.updateProduct(updateProductReq);
+
+      return {
+        statusCode: 200,
+        message: 'Update product successfully',
+        data: res,
+      };
+    } catch (error) {
+      if (error.status) throw error;
+      else throw ReturnInternalServerError(error);
+    }
+  }
+
   @Get('')
   async getProduct(
     @Query(new PagingPipe())
@@ -63,7 +84,7 @@ export class ProductController {
       const res = await this.productService.getAll(query);
       return {
         statusCode: 200,
-        message: 'Get all product info successfully',
+        message: 'Get all products info successfully',
         data: res,
       };
     } catch (error) {
@@ -85,7 +106,7 @@ export class ProductController {
       const res = await this.productService.getById(query);
       return {
         statusCode: 200,
-        message: 'Get all product info successfully',
+        message: 'Get product detail info successfully',
         data: res,
       };
     } catch (error) {
@@ -112,7 +133,7 @@ export class ProductController {
       const res = await this.productService.getStatus(query);
       return {
         statusCode: 200,
-        message: 'Get all product info successfully',
+        message: 'Get product status info successfully',
         data: res,
       };
     } catch (error) {
@@ -129,7 +150,7 @@ export class ProductController {
       const res = await this.productService.truncate();
       return {
         statusCode: 200,
-        message: 'Get all product info successfully',
+        message: 'Delete all products info successfully',
         data: res,
       };
     } catch (error) {

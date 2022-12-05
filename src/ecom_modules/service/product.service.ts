@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ObjectId } from 'mongoose';
 import { CategoryRepo, ProductRepo } from '../repo';
-import { CreateProductReq } from '../request';
+import { CreateProductReq, UpdateProductReq } from '../request';
 import { CategoryService } from './category.service';
 
 @Injectable()
@@ -15,6 +15,26 @@ export class ProductService {
     this.categoryService.upsert(createProductReq.categoryName);
     const newProduct = await this.productRepo.create(createProductReq);
     return newProduct;
+  }
+
+  async updateProduct(updateProductReq: UpdateProductReq) {
+    this.categoryService.upsert(updateProductReq.categoryName);
+    const updateItem = { ...updateProductReq };
+    delete updateItem._id;
+    const newProduct = await this.productRepo.upsert(
+      updateProductReq._id,
+      updateItem,
+    );
+    return newProduct;
+  }
+
+  async updateCategory(prevName: string, currName: string) {
+    const updateRes = await this.productRepo.updateCategory(
+      { categoryName: currName },
+      { categoryName: prevName },
+    );
+
+    return updateRes;
   }
 
   async getById({ id }: { id?: ObjectId }) {
@@ -77,14 +97,6 @@ export class ProductService {
     // if (categoryName != null)
     // res.data = res.data.filter((e) => e.categoryName == categoryName);
     return { listRoom: res };
-  }
-
-  async update(id: ObjectId, updateItem?: {}) {
-    updateItem = { ...updateItem, updatedAt: new Date().getTime() };
-
-    const res = await this.productRepo.upsert(id, updateItem);
-
-    return { data: res };
   }
 
   async getStatus({

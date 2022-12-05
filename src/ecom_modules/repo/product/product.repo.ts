@@ -9,16 +9,25 @@ export class ProductRepo {
   constructor(private readonly responseService: ResponseService) {}
 
   async getById(id: ObjectId): Promise<ProductModel> {
-    const res: ProductModel = await Product.findById(id);
+    const res: ProductModel = await Product.findById(id).lean();
     return res;
   }
 
-  async upsert(id: ObjectId, item: any): Promise<ProductModel> {
+  async upsert(id: string, item: any): Promise<ProductModel> {
     const product = await Product.findByIdAndUpdate({ _id: id }, item, {
       new: true,
       upsert: true,
     });
     return product;
+  }
+
+  async updateCategory(item: any, filter: any): Promise<ProductModel[]> {
+    const products: ProductModel[] = await Product.updateMany(filter, item, {
+      new: true,
+      upsert: true,
+    }).lean();
+
+    return products;
   }
 
   async truncate() {

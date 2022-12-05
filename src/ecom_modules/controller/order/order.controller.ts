@@ -107,7 +107,7 @@ export class OrderController {
       const res = await this.orderService.getAll(getOrderListReq);
       return {
         statusCode: 200,
-        message: 'Get all order info successfully',
+        message: 'Get all orders info successfully',
         data: res,
       };
     } catch (error) {
@@ -164,7 +164,7 @@ export class OrderController {
       const res = await this.orderService.truncate();
       return {
         statusCode: 200,
-        message: 'Get all product info successfully',
+        message: 'Delete all orders successfully',
         data: res,
       };
     } catch (error) {

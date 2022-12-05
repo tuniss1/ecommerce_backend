@@ -7,10 +7,16 @@ export class ProductModel {
   SKU: string;
   description: string;
   totalQuantity: number;
-  images: string[];
+  images: ImageModel[] | string;
   categoryName: string;
   createdAt: number;
   updatedAt: number;
+}
+
+export class ImageModel {
+  id: string;
+  url: string;
+  ref: string;
 }
 
 const ProductSchema = new Schema({
@@ -21,7 +27,16 @@ const ProductSchema = new Schema({
   SKU: { type: String, default: '' },
   description: { type: String, default: '' },
   totalQuantity: { type: Number, default: 0 },
-  images: [{ type: String }],
+  images: [
+    {
+      type: Object,
+      default: {
+        id: { type: String, default: '' },
+        url: { type: String, default: '' },
+        ref: { type: String, default: '' },
+      },
+    },
+  ],
   categoryName: { type: String },
   createdAt: { type: Number, default: new Date().getTime() },
   updatedAt: { type: Number, default: new Date().getTime() },
