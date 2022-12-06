@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { ObjectId } from 'mongoose';
 import { CategoryRepo, ProductRepo } from '../repo';
 import { CreateProductReq, UpdateProductReq } from '../request';
@@ -7,8 +7,9 @@ import { CategoryService } from './category.service';
 @Injectable()
 export class ProductService {
   constructor(
-    private readonly productRepo: ProductRepo,
-    private readonly categoryService: CategoryService,
+    @Inject(forwardRef(() => CategoryService))
+    private categoryService: CategoryService,
+    private productRepo: ProductRepo,
   ) {}
 
   async createProduct(createProductReq: CreateProductReq) {

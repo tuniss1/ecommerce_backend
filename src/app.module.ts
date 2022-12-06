@@ -10,6 +10,7 @@ import { UserAgentModule } from './auth_modules/model/userAgent/userAgent.module
 import { join } from 'path';
 import { DatabaseModule } from './nmd_core/database';
 import { EcomModule } from './ecom_modules/ecom.module';
+import { UserModule } from './auth_modules/model/user/user.module';
 
 @Module({
   imports: [
@@ -23,7 +24,7 @@ import { EcomModule } from './ecom_modules/ecom.module';
       exclude: ['/api*'],
     }),
 
-    // BkEModule,
+    UserModule,
     EcomModule,
   ],
   controllers: [AppController],

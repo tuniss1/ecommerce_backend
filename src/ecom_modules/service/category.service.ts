@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { isNotEmpty } from 'class-validator';
 import { CategoryRepo } from '../repo';
 import { CreateCategoryReq } from '../request';
@@ -7,8 +7,9 @@ import { ProductService } from './product.service';
 @Injectable()
 export class CategoryService {
   constructor(
-    private readonly categoryRepo: CategoryRepo,
-    private readonly productService: ProductService,
+    @Inject(forwardRef(() => ProductService))
+    private productService: ProductService,
+    private categoryRepo: CategoryRepo,
   ) {}
 
   async createCategory(createCategoryReq: CreateCategoryReq) {

@@ -1,25 +1,19 @@
 import { Module } from '@nestjs/common';
-import { OrderRepo, CategoryRepo, ProductRepo, UserRepo } from '../../repo';
+import { OrderRepo, UserRepo } from '../../repo';
 import { OrderService } from '../../service/order.service';
-import { AuthMiddleware } from '../../../nmd_core/common/middlewares/bearer.middleware';
 import { OrderController } from '../../controller/order/order.controller';
 import { ResponseService } from '../../../nmd_core/shared/response.service';
-import { CategoryService } from '../../service/category.service';
-import { ProductService } from '../../service/product.service';
+import { AuthMiddleware } from '../../../nmd_core/common/middlewares/bearer.middleware';
 
 @Module({
   imports: [],
   controllers: [OrderController],
   providers: [
-    ProductRepo,
-    ProductService,
-    AuthMiddleware,
-    UserRepo,
-    ResponseService,
-    CategoryService,
-    CategoryRepo,
     OrderService,
     OrderRepo,
+    UserRepo,
+    ResponseService,
+    AuthMiddleware,
   ],
   exports: [],
 })
