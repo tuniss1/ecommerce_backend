@@ -66,6 +66,30 @@ export class ProductController {
     }
   }
 
+  @Post('/delete')
+  @HttpCode(200)
+  @UsePipes(new ValidationPipe())
+  async deleteProducts(
+    @Req() req: Request,
+    @Body()
+    removeProductReq: {
+      _id: string[];
+    },
+  ) {
+    try {
+      const res = await this.productService.deleteProducts(removeProductReq);
+
+      return {
+        statusCode: 200,
+        message: 'Remove products successfully',
+        data: res,
+      };
+    } catch (error) {
+      if (error.status) throw error;
+      else throw ReturnInternalServerError(error);
+    }
+  }
+
   @Get('')
   async getProduct(
     @Query(new PagingPipe())

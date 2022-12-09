@@ -19,6 +19,6 @@ import { CategoryModule } from '../category/category.module';
     UserRepo,
     ResponseService,
   ],
-  exports: [ProductService],
+  exports: [],
 })
 export class ProductModule {}

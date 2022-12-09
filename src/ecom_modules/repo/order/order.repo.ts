@@ -9,14 +9,13 @@ export class OrderRepo {
   constructor(private readonly responseService: ResponseService) {}
 
   async getById(id: string): Promise<OrderModel> {
-    const res: OrderModel = await Order.findById({ _id: id });
+    const res: OrderModel = await Order.findById({ _id: id }).lean();
     return res;
   }
 
   async upsert(id: string, item: any): Promise<OrderModel> {
     const order = await Order.findByIdAndUpdate({ _id: id }, item, {
       new: true,
-      upsert: true,
     });
     return order;
   }

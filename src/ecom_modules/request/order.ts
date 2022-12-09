@@ -22,7 +22,7 @@ class DeliverModel {
 }
 
 export class GetOrderDetailReq {
-  userId: string;
+  userId?: string;
   orderId: string;
 }
 

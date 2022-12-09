@@ -47,10 +47,45 @@ export class UserController {
     }
   }
 
+  @Post('/createAdmin')
+  @HttpCode(200)
+  @UsePipes(new ValidationPipe())
+  async createAdmin(@Body() createUserReq: CreateUserReq) {
+    try {
+      const returnUserRes = await this.userService.createAdmin(createUserReq);
+
+      return {
+        statusCode: 200,
+        message: 'Create user successfully',
+        data: returnUserRes,
+      };
+    } catch (error) {
+      if (error.status) throw error;
+      else throw ReturnInternalServerError(error);
+    }
+  }
+
   @Post('/login')
   @HttpCode(200)
   @UsePipes(new ValidationPipe())
   async login(@Body() getUserReq: GetUserReq) {
+    try {
+      const returnUserRes = await this.userService.loginAdmin(getUserReq);
+      return {
+        statusCode: 200,
+        message: 'Login successfully.',
+        data: returnUserRes,
+      };
+    } catch (error) {
+      if (error.status) throw error;
+      else throw ReturnInternalServerError(error);
+    }
+  }
+
+  @Post('/loginAdmin')
+  @HttpCode(200)
+  @UsePipes(new ValidationPipe())
+  async loginAdmin(@Body() getUserReq: GetUserReq) {
     try {
       const returnUserRes = await this.userService.login(getUserReq);
       return {

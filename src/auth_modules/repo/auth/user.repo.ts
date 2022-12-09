@@ -11,8 +11,11 @@ export class UserRepo {
     return userModel;
   }
 
-  async getByEmail(email: string): Promise<UserModel> {
-    const userModel: UserModel = await User.findOne({ email: email });
+  async getByEmail(email: string, role: string): Promise<UserModel> {
+    const userModel: UserModel = await User.findOne({
+      email: email,
+      role: role,
+    });
     return userModel;
   }
 

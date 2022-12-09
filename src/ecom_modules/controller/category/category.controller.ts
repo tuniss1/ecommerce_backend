@@ -19,9 +19,8 @@ import { PagingPipe } from '../../../nmd_core/common/pipes/paging.pipe';
 @Controller('/category')
 export class CategoryController {
   constructor(
-    private readonly categoryService: CategoryService,
-  ) // private readonly authMiddleWare: AuthMiddleware,
-  {}
+    private readonly categoryService: CategoryService, // private readonly authMiddleWare: AuthMiddleware,
+  ) {}
 
   @Post('/create')
   @HttpCode(200)
@@ -60,7 +59,33 @@ export class CategoryController {
 
       return {
         statusCode: 200,
-        message: 'Create category successfully',
+        message: 'Update category successfully',
+        data: res,
+      };
+    } catch (error) {
+      if (error.status) throw error;
+      else throw ReturnInternalServerError(error);
+    }
+  }
+
+  @Post('/delete')
+  @HttpCode(200)
+  @UsePipes(new ValidationPipe())
+  async deleteCategories(
+    @Req() req: Request,
+    @Body()
+    removeCategoryReq: {
+      _id: string[];
+    },
+  ) {
+    try {
+      const res = await this.categoryService.deleteCategories(
+        removeCategoryReq,
+      );
+
+      return {
+        statusCode: 200,
+        message: 'Update category successfully',
         data: res,
       };
     } catch (error) {
@@ -78,6 +103,29 @@ export class CategoryController {
       return {
         statusCode: 200,
         message: 'Get all categories info successfully',
+        data: res,
+      };
+    } catch (error) {
+      if (error.status) throw error;
+      else throw ReturnInternalServerError(error);
+    }
+  }
+
+  @Post('/detail')
+  async getCategoryDetail(
+    @Req() req: Request,
+    @Body()
+    getCategoryReq: {
+      _id: string;
+    },
+  ) {
+    // await this.authMiddleWare.validateBearer(req);
+
+    try {
+      const res = await this.categoryService.getById(getCategoryReq);
+      return {
+        statusCode: 200,
+        message: 'Get category info successfully',
         data: res,
       };
     } catch (error) {

@@ -26,6 +26,8 @@ export class GetUserReq {
   @IsString()
   @IsNotEmpty()
   password: string;
+
+  role?: string;
 }
 
 export class RemoveUserReq {
@@ -38,6 +40,8 @@ export class GmailVerifyReq {
   @IsEmail()
   @IsNotEmpty()
   email: string;
+
+  role?: string;
 }
 
 export class CheckVerifyReq {
@@ -48,6 +52,8 @@ export class CheckVerifyReq {
   @IsString()
   @IsNotEmpty()
   otpCode: string;
+
+  role?: string;
 }
 
 export class ResetPassReq {

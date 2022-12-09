@@ -12,20 +12,34 @@ export class ProductService {
   ) {}
 
   async createProduct(createProductReq: CreateProductReq) {
-    this.categoryService.upsert(createProductReq.categoryName);
+    this.categoryService.upsert(createProductReq.categoryName, 1);
     const newProduct = await this.productRepo.create(createProductReq);
     return newProduct;
   }
 
   async updateProduct(updateProductReq: UpdateProductReq) {
-    this.categoryService.upsert(updateProductReq.categoryName);
-    const updateItem = { ...updateProductReq };
+    const currProduct = await this.productRepo.getById(updateProductReq._id);
+    if (currProduct.categoryName !== updateProductReq.categoryName) {
+      this.categoryService.upsert(updateProductReq.categoryName, 1);
+      this.categoryService.upsert(currProduct.categoryName, -1);
+    }
+    const updateItem = { ...updateProductReq, updatedAt: Date.now() };
     delete updateItem._id;
     const newProduct = await this.productRepo.upsert(
       updateProductReq._id,
       updateItem,
     );
     return newProduct;
+  }
+
+  async deleteProducts({ _id }: { _id: string[] }) {
+    const res = [];
+    for (const id of _id) {
+      res.push(await this.productRepo.remove(id));
+      await this.categoryService.upsert(res[res.length - 1].categoryName, -1);
+    }
+
+    return res;
   }
 
   async updateCategory(prevName: string, currName: string) {

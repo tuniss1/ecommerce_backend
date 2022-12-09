@@ -14,6 +14,7 @@ export class UserModel {
   isValid: boolean;
   hashedToken: string;
   point: Number;
+  role: string;
   status: number; // -1: delete, 0: offline, 1: online
 
   fcmToken: string;
@@ -37,6 +38,7 @@ const UserSchema = new Schema({
   isValid: { type: Boolean, default: false },
   hashedToken: { type: String, default: '200701' },
   point: { type: Number, default: 0 },
+  role: { type: String, default: 'CUSTOMER' },
   status: { type: Number, default: 0 },
 
   fcmToken: { type: String, default: '' },

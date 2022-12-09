@@ -8,23 +8,26 @@ import { Product, ProductModel } from '../../model/product/product.model';
 export class ProductRepo {
   constructor(private readonly responseService: ResponseService) {}
 
-  async getById(id: ObjectId): Promise<ProductModel> {
-    const res: ProductModel = await Product.findById(id).lean();
+  async getById(id: ObjectId | string): Promise<ProductModel> {
+    const res: ProductModel = await Product.findById({ _id: id }).lean();
     return res;
   }
 
   async upsert(id: string, item: any): Promise<ProductModel> {
     const product = await Product.findByIdAndUpdate({ _id: id }, item, {
       new: true,
-      upsert: true,
     });
+    return product;
+  }
+
+  async remove(id: string): Promise<ProductModel> {
+    const product = await Product.findByIdAndDelete({ _id: id });
     return product;
   }
 
   async updateCategory(item: any, filter: any): Promise<ProductModel[]> {
     const products: ProductModel[] = await Product.updateMany(filter, item, {
       new: true,
-      upsert: true,
     }).lean();
 
     return products;

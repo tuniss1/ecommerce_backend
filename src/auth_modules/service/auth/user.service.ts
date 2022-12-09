@@ -72,7 +72,47 @@ export class UserService {
 
   async createUser(createUserReq: CreateUserReq): Promise<RegisterUserRes> {
     // check user with email
-    var getOldUser = await this.userRepo.getByEmail(createUserReq.email);
+    var getOldUser = await this.userRepo.getByEmail(
+      createUserReq.email,
+      'CUSTOMER',
+    );
+    if (getOldUser) throw ReturnNotFoundException('User already exist.');
+
+    // hashed password and map req to model
+    const hashedPassword = await hashPassword(createUserReq.password);
+
+    // gen and hask token for mail verify
+    const token = this.helperService.makeToken(6);
+    const hashedToken = await hashPassword(token);
+
+    const userModel = {
+      email: createUserReq.email,
+      hashedPassword: hashedPassword,
+      firstName: createUserReq.firstName,
+      lastName: createUserReq.lastName,
+      hashedToken: hashedToken,
+      status: 1,
+    };
+
+    const returnUser = await this.userRepo.create(userModel);
+
+    const registerUserRes = this.returnLoginRes(returnUser);
+
+    this.mailService.gmailVerify(
+      returnUser.email,
+      returnUser.firstName + returnUser.lastName,
+      token,
+    );
+
+    return registerUserRes;
+  }
+
+  async createAdmin(createUserReq: CreateUserReq): Promise<RegisterUserRes> {
+    // check user with email
+    var getOldUser = await this.userRepo.getByEmail(
+      createUserReq.email,
+      'ADMIN',
+    );
     if (getOldUser) throw ReturnNotFoundException('User already exist.');
 
     // hashed password and map req to model
@@ -105,7 +145,31 @@ export class UserService {
   }
 
   async login(getUserReq: GetUserReq): Promise<LoginUserRes> {
-    const returnUser = await this.userRepo.getByEmail(getUserReq.email);
+    if (!getUserReq.role) throw ReturnNotFoundException('Wrong role.');
+
+    const returnUser = await this.userRepo.getByEmail(
+      getUserReq.email,
+      'CUSTOMER',
+    );
+    if (!returnUser) throw ReturnNotFoundException('Wrong email or password.');
+
+    const checkPass = await comparePassword(
+      getUserReq.password,
+      returnUser.hashedPassword,
+    );
+
+    if (!checkPass) throw ReturnNotFoundException('Wrong email or password.');
+
+    //map model -> response
+    const returnLoginRes = this.returnLoginRes(returnUser);
+    return returnLoginRes;
+  }
+
+  async loginAdmin(getUserReq: GetUserReq): Promise<LoginUserRes> {
+    const returnUser = await this.userRepo.getByEmail(
+      getUserReq.email,
+      'ADMIN',
+    );
     if (!returnUser) throw ReturnNotFoundException('Wrong email or password.');
 
     const checkPass = await comparePassword(
@@ -121,7 +185,10 @@ export class UserService {
   }
 
   async remove(removeUserReq: RemoveUserReq): Promise<UserModel> {
-    const returnUser = await this.userRepo.getByEmail(removeUserReq.email);
+    const returnUser = await this.userRepo.getByEmail(
+      removeUserReq.email,
+      'CUSTOMER',
+    );
     if (!returnUser) throw ReturnNotFoundException('Wrong email.');
 
     // Delete user
@@ -140,7 +207,10 @@ export class UserService {
 
   async gmailVerify(gmailVerifyReq: GmailVerifyReq) {
     // check user with email
-    const getOldUser = await this.userRepo.getByEmail(gmailVerifyReq.email);
+    const getOldUser = await this.userRepo.getByEmail(
+      gmailVerifyReq.email,
+      gmailVerifyReq.role,
+    );
     if (!getOldUser) throw ReturnNotFoundException('User not found.');
 
     const token = this.helperService.makeToken(6);
@@ -160,7 +230,10 @@ export class UserService {
 
   async checkGmailVerify(checkVerifyReq: CheckVerifyReq) {
     // check user with email
-    const getOldUser = await this.userRepo.getByEmail(checkVerifyReq.email);
+    const getOldUser = await this.userRepo.getByEmail(
+      checkVerifyReq.email,
+      checkVerifyReq.role,
+    );
     if (!getOldUser) throw ReturnNotFoundException('Verification failed.');
 
     const checkToken = await comparePassword(

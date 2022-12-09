@@ -100,13 +100,21 @@ export class OrderService {
   }
 
   async getById({ userId, orderId }: { userId?: string; orderId?: string }) {
-    const res = await this.orderRepo.getById(orderId).catch((e) => {
+    const order = await this.orderRepo.getById(orderId).catch((e) => {
       throw ReturnNotFoundException('Invalid user or order.');
     });
 
-    if (!res || res.userId !== userId)
+    if (!order || (userId && order.userId !== userId))
       throw ReturnNotFoundException('Invalid user or order.');
-    return res;
+
+    const userObj = await this.userRepo.getByIdString(order.userId);
+    return {
+      ...order,
+      customer: {
+        firstName: userObj.firstName,
+        lastName: userObj.lastName,
+      },
+    };
   }
 
   async truncate() {
@@ -184,7 +192,7 @@ export class OrderService {
     };
 
     const order = await this.orderRepo.getById(orderId);
-    if (!order || order.userId != userId)
+    if (!order || (userId && order.userId != userId))
       throw ReturnNotFoundException('Invalid order id or user.');
 
     const res = await this.orderRepo.upsert(orderId, updateItem);
