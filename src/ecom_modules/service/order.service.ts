@@ -121,6 +121,82 @@ export class OrderService {
     await this.orderRepo.truncate();
   }
 
+  async getBudget() {
+    const orders = await this.orderRepo.getAll({}, { status: 4 });
+    const now = new Date();
+    const curMonth = now.getMonth() + 1;
+    const curYear = now.getFullYear();
+    let lastMonth: any;
+    let thisMonth = new Date(`${curMonth}/01/${now.getFullYear()}`).getTime();
+    if (now.getMonth() === 0) {
+      lastMonth = new Date(`${12}/01/${curYear - 1}`).getTime();
+    } else {
+      lastMonth = new Date(`${curMonth}/01/${curYear}`).getTime();
+    }
+
+    const last5Months = [];
+    for (let i = 0; i < 5; i++) {
+      if (curMonth - i > 0) {
+        last5Months.push({
+          label: `${curMonth - i}/${curYear}`,
+          budget: 0,
+          time: new Date(`${curMonth}/01/${curYear}`).getTime(),
+        });
+      } else {
+        last5Months.push({
+          label: `${12 + 1 + (curMonth - i)}/${curYear - 1}`,
+          budget: 0,
+          time: new Date(
+            `${12 + 1 + (curMonth - i)}/01/${curYear - 1}`,
+          ).getTime(),
+        });
+      }
+    }
+
+    last5Months.reverse();
+    console.log();
+
+    let begin = 0;
+    let end = 1;
+
+    let totalBudget = 0;
+    let budgetMonth = 0;
+    let orderMonth = 0;
+    for (const order of orders) {
+      totalBudget += order.totalCost;
+      if (order.createdAt >= lastMonth && order.createdAt <= thisMonth) {
+        budgetMonth += order.totalCost;
+        orderMonth++;
+      }
+
+      begin = 0;
+      end = 1;
+
+      for (begin; begin < 5; begin++) {
+        if (end === 5) {
+          if (order.createdAt >= last5Months[begin].time) {
+            last5Months[begin].budget += order.totalCost;
+          }
+        } else if (
+          order.createdAt >= last5Months[begin].time &&
+          order.createdAt <= last5Months[end].time
+        ) {
+          last5Months[begin].budget += order.totalCost;
+        }
+
+        end++;
+      }
+    }
+
+    return {
+      totalBudget,
+      budgetMonth,
+      orderMonth,
+      total: orders.length,
+      barData: last5Months,
+    };
+  }
+
   async getAll({
     page,
     limit,

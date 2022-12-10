@@ -96,6 +96,23 @@ export class OrderController {
     }
   }
 
+  @Get('/budget')
+  async getTotalBudget() {
+    // await this.authMiddleWare.validateBearer(req);
+
+    try {
+      const res = await this.orderService.getBudget();
+      return {
+        statusCode: 200,
+        message: 'Get all categories info successfully',
+        data: res,
+      };
+    } catch (error) {
+      if (error.status) throw error;
+      else throw ReturnInternalServerError(error);
+    }
+  }
+
   @Post('/list')
   async getOrderList(
     @Req() req: Request,
