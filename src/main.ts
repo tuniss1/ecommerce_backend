@@ -26,13 +26,13 @@ async function bootstrap() {
   // setup cors
   app.enableCors();
   app.use(function (req, res, next) {
+    res.setHeader('Access-Control-Allow-Credentials', true);
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
     res.setHeader(
       'Access-Control-Allow-Headers',
-      'Origin, X-Requested-With, Content-Type, Accept',
+      'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version',
     );
-    res.setHeader('Access-Control-Allow-Credentials', true);
     next();
   });
   // end of config cors
