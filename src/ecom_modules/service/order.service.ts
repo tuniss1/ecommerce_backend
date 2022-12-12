@@ -220,7 +220,7 @@ export class OrderService {
     const filter = {};
 
     if (userId) filter['userId'] = userId;
-    if (status && status != -1) filter['status'] = status;
+    if (status !== null && status != -1) filter['status'] = status;
 
     const sortItem = {};
     if (sort && sort.length) sortItem['createdAt'] = sort;
