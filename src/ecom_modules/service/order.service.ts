@@ -35,7 +35,10 @@ export class OrderService {
     // create deliver
 
     // create order
-    const newOrder = await this.orderRepo.create(createOrderReq);
+    const newOrder = await this.orderRepo.create({
+      ...createOrderReq,
+      status: 0,
+    });
     return {
       data: newOrder,
     };
