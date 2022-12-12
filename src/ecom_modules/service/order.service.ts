@@ -131,7 +131,7 @@ export class OrderService {
     if (now.getMonth() === 0) {
       lastMonth = new Date(`${12}/01/${curYear - 1}`).getTime();
     } else {
-      lastMonth = new Date(`${curMonth}/01/${curYear}`).getTime();
+      lastMonth = new Date(`${curMonth - 1}/01/${curYear}`).getTime();
     }
 
     const last5Months = [];
