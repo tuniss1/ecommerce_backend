@@ -70,7 +70,7 @@ export class UserController {
   @UsePipes(new ValidationPipe())
   async login(@Body() getUserReq: GetUserReq) {
     try {
-      const returnUserRes = await this.userService.loginAdmin(getUserReq);
+      const returnUserRes = await this.userService.login(getUserReq);
       return {
         statusCode: 200,
         message: 'Login successfully.',
@@ -87,7 +87,7 @@ export class UserController {
   @UsePipes(new ValidationPipe())
   async loginAdmin(@Body() getUserReq: GetUserReq) {
     try {
-      const returnUserRes = await this.userService.login(getUserReq);
+      const returnUserRes = await this.userService.loginAdmin(getUserReq);
       return {
         statusCode: 200,
         message: 'Login successfully.',
