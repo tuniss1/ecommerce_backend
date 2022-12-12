@@ -221,7 +221,7 @@ export class OrderService {
     }
 
     const filter = {};
-
+    console.log(userId);
     if (userId) filter['userId'] = userId;
     if (status !== null && status != -1) filter['status'] = status;
 
@@ -265,7 +265,9 @@ export class OrderService {
     userId?: string;
     status?: number;
   }) {
-    if (!status || status < 0) throw ReturnNotFoundException('Invalid status.');
+    console.log(status);
+    if (status === null || status < 0)
+      throw ReturnNotFoundException('Invalid status.');
     const updateItem = {
       status,
     };

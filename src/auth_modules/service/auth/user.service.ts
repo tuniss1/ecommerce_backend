@@ -98,11 +98,11 @@ export class UserService {
 
     const registerUserRes = this.returnLoginRes(returnUser);
 
-    this.mailService.gmailVerify(
-      returnUser.email,
-      returnUser.firstName + returnUser.lastName,
-      token,
-    );
+    // this.mailService.gmailVerify(
+    //   returnUser.email,
+    //   returnUser.firstName + returnUser.lastName,
+    //   token,
+    // );
 
     return registerUserRes;
   }
@@ -128,6 +128,7 @@ export class UserService {
       firstName: createUserReq.firstName,
       lastName: createUserReq.lastName,
       hashedToken: hashedToken,
+      role: 'ADMIN',
       status: 1,
     };
 
@@ -135,11 +136,11 @@ export class UserService {
 
     const registerUserRes = this.returnLoginRes(returnUser);
 
-    this.mailService.gmailVerify(
-      returnUser.email,
-      returnUser.firstName + returnUser.lastName,
-      token,
-    );
+    // this.mailService.gmailVerify(
+    //   returnUser.email,
+    //   returnUser.firstName + returnUser.lastName,
+    //   token,
+    // );
 
     return registerUserRes;
   }
@@ -170,6 +171,7 @@ export class UserService {
       getUserReq.email,
       'ADMIN',
     );
+    console.log(returnUser);
     if (!returnUser) throw ReturnNotFoundException('Wrong email or password.');
 
     const checkPass = await comparePassword(
