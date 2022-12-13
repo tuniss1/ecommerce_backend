@@ -1,6 +1,6 @@
 ## Description
 
-[BkE API](https://github.com/nminhdai) Hello everyone, if you need data please contact me.
+This is backend project for e-commerce.
 
 ## Installation
 
